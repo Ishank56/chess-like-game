@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turn-based Chess-like Game with Move History</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div>
+            <div id="game-board"></div>
+            <div id="message"></div>
+        </div>
+
+        <!-- History and Restart Button Container -->
+        <div id="history-container">
+            <div id="move-history">
+                <h2>Move History</h2>
+                <ul id="history-list"></ul>
+            </div>
+            <!-- Fancy Restart Button -->
+            <button id="restart-button" class="restart-button">Restart Game</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+/* Basic Styles for the grid and pieces */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+#game-container {
+    display: flex;
+    gap: 30px;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(5, 100px);
+    grid-template-rows: repeat(5, 100px);
+    gap: 5px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    position: relative;
+}
+
+.pawn, .hero1, .hero2 {
+    border-radius: 50%;
+}
+
+.player-A {
+    border: 3px solid blue;
+}
+
+.player-B {
+    border: 3px solid red;
+}
+
+.pawn-A {
+    background-color: blue;
+}
+
+.pawn-B {
+    background-color: red;
+}
+
+.hero1-A {
+    background-color: darkblue;
+}
+
+.hero1-B {
+    background-color: darkred;
+}
+
+.hero2-A {
+    background-color: lightblue;
+}
+
+.hero2-B {
+    background-color: lightcoral;
+}
+.hero3-A {
+    background-color: darkblue;
+    border: 3px solid blue;
+}
+
+.hero3-B {
+    background-color: darkred;
+    border: 3px solid red;
+}
+
+/* Styles for Move History */
+
+
+/* Fancy Restart Button Styles */
+.restart-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ff5722;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.restart-button:hover {
+    background-color: #e64a19;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transform: translateX(-50%) scale(1.05);
+}
+
+.restart-button:active {
+    background-color: #d84315;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transform: translateX(-50%) scale(0.98);
+}
+
+#message {
+    margin-top: 20px;
+}
+#move-history {
+    font-family: Arial, sans-serif;
+    border: 1px solid black;
+    padding: 15px;
+    background-color: #fff;
+    max-height: 500px;
+    overflow-y: auto;
+    position: relative;
+}
+
+#move-history h2 {
+    margin-top: 0;
+}
