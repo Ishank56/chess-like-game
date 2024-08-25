@@ -14,7 +14,7 @@ let grid = [
 
 // Move history
 const moveHistory = [];
-
+//jnaefjnjnjnefjnjwnefnjnjewfw
 function renderBoard() {
     board.innerHTML = ''; // Clear the board before re-rendering
     for (let row = 0; row < 5; row++) {
