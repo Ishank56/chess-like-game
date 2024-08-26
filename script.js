@@ -5,11 +5,11 @@ const restartButton = document.createElement('button');
 
 // Initialize the 5x5 grid with updated pieces
 let grid = [
-    ['A-P1', 'A-P2', 'A-H1', 'A-H2', 'A-P3'], // Player A's row
+    ['A-P1', 'A-H1', 'A-H2', 'A-H3', 'A-P2'], // Player A's row
     ['', '', '', '', ''], // Empty row
     ['', '', '', '', ''], // Empty row
     ['', '', '', '', ''], // Empty row
-    ['B-P1', 'B-P2', 'B-H1', 'B-H2', 'B-P3']  // Player B's row
+    ['B-P1', 'B-H1', 'B-H2', 'B-H3', 'B-P2']  // Player B's row
 ];
 
 // Move history
@@ -125,11 +125,11 @@ function displayRestartButton() {
 function restartGame() {
     // Reset the grid to the initial state
     grid = [
-        ['A-P1', 'A-P2', 'A-H1', 'A-H2', 'A-P3'],
+        ['A-P1', 'A-H1', 'A-H2', 'A-H3', 'A-P2'],
         ['', '', '', '', ''],
         ['', '', '', '', ''],
         ['', '', '', '', ''],
-        ['B-P1', 'B-P2', 'B-H1', 'B-H2', 'B-P3']
+        ['B-P1', 'B-H1', 'B-H2', 'B-H3', 'B-P2']
     ];
 
     // Clear move history
@@ -163,6 +163,8 @@ function isMoveValid(startRow, startCol, endRow, endCol, pieceType, isPlayerA) {
             return (rowDiff === 2 && colDiff === 0) || (rowDiff === 0 && colDiff === 2) && checkStraightPathForKill(startRow, startCol, endRow, endCol);
         } else if (grid[startRow][startCol].includes('H2')) {
             return rowDiff === 2 && colDiff === 2 && checkDiagonalPathForKill(startRow, startCol, endRow, endCol);
+        } else if (grid[startRow][startCol].includes('H3')) {
+            return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2); // Knight-like movement
         }
     }
     return false;
@@ -198,9 +200,9 @@ function checkStraightPathForKill(startRow, startCol, endRow, endCol) {
 function checkDiagonalPathForKill(startRow, startCol, endRow, endCol) {
     const rowStep = startRow < endRow ? 1 : -1;
     const colStep = startCol < endCol ? 1 : -1;
+
     let rowBetween = startRow + rowStep;
     let colBetween = startCol + colStep;
-
     while (rowBetween !== endRow && colBetween !== endCol) {
         const betweenPiece = grid[rowBetween][colBetween];
         if (betweenPiece && betweenPiece.includes(currentPlayer === 'A' ? 'A' : 'B')) return false;
@@ -213,12 +215,10 @@ function checkDiagonalPathForKill(startRow, startCol, endRow, endCol) {
 }
 
 function updateMoveHistory() {
-    historyList.innerHTML = ''; 
-    moveHistory.forEach((move, index) => {
+    historyList.innerHTML = '';
+    moveHistory.forEach(move => {
         const listItem = document.createElement('li');
-        listItem.textContent = `${index + 1}. ${move}`;
+        listItem.textContent = move;
         historyList.appendChild(listItem);
     });
 }
-
-renderBoard();

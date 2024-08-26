@@ -1,11 +1,11 @@
 /* Basic Styles for the grid and pieces */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #e0e0e0;
 }
 
 #game-container {
@@ -15,71 +15,125 @@ body {
 
 #game-board {
     display: grid;
-    grid-template-columns: repeat(5, 100px);
-    grid-template-rows: repeat(5, 100px);
+    grid-template-columns: repeat(5, 120px); /* Increased cell size for a more premium look */
+    grid-template-rows: repeat(5, 120px);
     gap: 5px;
+    background: #333; /* Dark background to contrast with the pieces */
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
 .cell {
-    width: 100px;
-    height: 100px;
-    background-color: white;
-    border: 1px solid black;
+    width: 120px;
+    height: 120px;
+    background-color: #f4f4f4;
+    border: 1px solid #999;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 24px;
     cursor: pointer;
     position: relative;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border-radius: 8px;
+    box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.pawn, .hero1, .hero2 {
+.cell:hover {
+    transform: scale(1.05);
+    background-color: #ddd; /* Lighten the cell color on hover */
+}
+
+.pawn, .hero1, .hero2, .hero3 {
     border-radius: 50%;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+    background: linear-gradient(145deg, #ddd, #bbb); /* Default metallic shine */
+    border: 2px solid #999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.player-A {
-    border: 3px solid blue;
-}
-
-.player-B {
-    border: 3px solid red;
-}
-
+/* Player A's Pieces (Blue-themed) */
 .pawn-A {
-    background-color: blue;
+    background: linear-gradient(145deg, #4a90e2, #357ab8); /* Metallic blue gradient */
+    border: 2px solid #2a5783;
 }
 
-.pawn-B {
-    background-color: red;
-}
-
-.hero1-A {
-    background-color: darkblue;
-}
-
-.hero1-B {
-    background-color: darkred;
+.hero1-A, .hero3-A {
+    background: linear-gradient(145deg, #357ab8, #2a5783); /* Darker metallic blue */
+    border: 3px solid #1e405d;
 }
 
 .hero2-A {
-    background-color: lightblue;
+    background: linear-gradient(145deg, #6699cc, #3b73b3); /* Lighter metallic blue */
+    border: 2px solid #2e5973;
+}
+
+/* Player B's Pieces (Red-themed) */
+.pawn-B {
+    background: linear-gradient(145deg, #ff5c5c, #d43f3f); /* Metallic red gradient */
+    border: 2px solid #a82828;
+}
+
+.hero1-B, .hero3-B {
+    background: linear-gradient(145deg, #b33939, #8b2727); /* Darker metallic red */
+    border: 3px solid #631818;
 }
 
 .hero2-B {
-    background-color: lightcoral;
-}
-.hero3-A {
-    background-color: darkblue;
-    border: 3px solid blue;
+    background: linear-gradient(145deg, #ff8585, #d65a5a); /* Lighter metallic red */
+    border: 2px solid #b34747;
 }
 
-.hero3-B {
-    background-color: darkred;
-    border: 3px solid red;
+/* Grid and Cell Enhancements */
+.cell:nth-child(even) {
+    background-color: #f0f0f0;
+}
+
+.cell:nth-child(odd) {
+    background-color: #e6e6e6;
+}
+
+#game-board {
+    background: #2c3e50; /* Darker background for contrast */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Player Borders */
+.player-A {
+    border: 3px solid #007bff; /* Blue border for Player A */
+}
+
+.player-B {
+    border: 3px solid #ff4b5c; /* Red border for Player B */
 }
 
 /* Styles for Move History */
+#move-history {
+    font-family: Arial, sans-serif;
+    border: 2px solid black;
+    padding: 15px;
+    background-color: #fff;
+    max-height: 500px;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+#move-history h2 {
+    margin-top: 0;
+}
 
 /* Fancy Restart Button Styles */
 .restart-button {
@@ -115,17 +169,4 @@ body {
 
 #message {
     margin-top: 20px;
-}
-#move-history {
-    font-family: Arial, sans-serif;
-    border: 1px solid black;
-    padding: 15px;
-    background-color: #fff;
-    max-height: 500px;
-    overflow-y: auto;
-    position: relative;
-}
-
-#move-history h2 {
-    margin-top: 0;
 }
