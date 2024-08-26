@@ -145,6 +145,27 @@ body {
     margin-top: 0;
 }
 
+#move-options {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#move-options button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#move-options button:hover {
+    background-color: #45a049;
+}
+
 /* Fancy Restart Button Styles */
 .restart-button {
     display: inline-block;

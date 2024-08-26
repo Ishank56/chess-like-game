@@ -1,22 +1,53 @@
+// WebSocket connection
+const socket = new WebSocket("ws://localhost:3000");
+
+socket.addEventListener('open', function(event) {
+    console.log('Connected to WS Server!');
+});
+
+socket.addEventListener('message', function(event) {
+    console.log('Message from server:', event.data);
+    try {
+        const message = JSON.parse(event.data);
+        switch(message.type) {
+            case 'move':
+                handleServerMove(message);
+                break;
+            case 'win':
+                handleServerWin(message);
+                break;
+            case 'restart':
+                handleServerRestart();
+                break;
+        }
+    } catch (error) {
+        // If the message is not JSON, just log it
+        console.log('Received non-JSON message:', event.data);
+    }
+});
+
 const board = document.getElementById("game-board");
-const message = document.getElementById("message");
+const messageElement = document.getElementById("message");
 const historyList = document.getElementById("history-list");
-const restartButton = document.getElementById('restart-button'); // Use existing button from HTML
+const restartButton = document.getElementById('restart-button');
 
 // Initialize the 5x5 grid with updated pieces
 let grid = [
-    ['A-P1', 'A-H1', 'A-H2', 'A-H3', 'A-P2'], // Player A's row
-    ['', '', '', '', ''], // Empty row
-    ['', '', '', '', ''], // Empty row
-    ['', '', '', '', ''], // Empty row
-    ['B-P1', 'B-H1', 'B-H2', 'B-H3', 'B-P2']  // Player B's row
+    ['A-P1', 'A-H1', 'A-H2', 'A-H3', 'A-P2'],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
+    ['', '', '', '', ''],
+    ['B-P1', 'B-H1', 'B-H2', 'B-H3', 'B-P2']
 ];
 
 // Move history
 const moveHistory = [];
 
+let currentPlayer = 'A';
+let selectedPiece = null;
+
 function renderBoard() {
-    board.innerHTML = ''; // Clear the board before re-rendering
+    board.innerHTML = '';
     for (let row = 0; row < 5; row++) {
         for (let col = 0; col < 5; col++) {
             const cell = document.createElement('div');
@@ -46,7 +77,7 @@ function renderBoard() {
                     cell.classList.add('player-B');
                 }
 
-                cell.textContent = piece.split('-')[1]; // Display only 'P1', 'P2', 'H1', 'H2', 'H3'
+                cell.textContent = piece.split('-')[1];
             }
 
             cell.addEventListener('click', () => handleMove(row, col));
@@ -55,69 +86,74 @@ function renderBoard() {
     }
 }
 
-let currentPlayer = 'A';
-let selectedPiece = null;
-
 function handleMove(row, col) {
     const cellContent = grid[row][col];
     
-    // If a piece is already selected and the player selects a new piece
     if (selectedPiece && cellContent && cellContent.includes(currentPlayer)) {
         selectedPiece = { row, col, piece: cellContent.split('-')[1] };
-        message.textContent = `Selected ${selectedPiece.piece} at (${row}, ${col}). Now pick a destination.`;
+        messageElement.textContent = `Selected ${selectedPiece.piece} at (${row}, ${col}). Now pick a destination.`;
     } else if (selectedPiece) {
         const { row: prevRow, col: prevCol, piece } = selectedPiece;
-        const pieceType = piece[0]; // 'P' for Pawn, 'H' for Hero
+        const pieceType = piece[0];
         const isPlayerA = currentPlayer === 'A';
 
         if (isMoveValid(prevRow, prevCol, row, col, pieceType, isPlayerA)) {
             if (cellContent === '' || (cellContent.includes('B') && isPlayerA) || (cellContent.includes('A') && !isPlayerA)) {
+                const moveInfo = {
+                    type: 'move',
+                    from: { row: prevRow, col: prevCol },
+                    to: { row, col },
+                    piece: `${currentPlayer}-${piece}`
+                };
+                socket.send(JSON.stringify(moveInfo));
+
                 moveHistory.push(`Player ${currentPlayer} moved ${piece} from (${prevRow}, ${prevCol}) to (${row}, ${col})`);
                 updateMoveHistory();
 
-                grid[prevRow][prevCol] = ''; // Clear the previous position
-                grid[row][col] = `${currentPlayer}-${piece}`; // Move to new position
+                grid[prevRow][prevCol] = '';
+                grid[row][col] = `${currentPlayer}-${piece}`;
                 selectedPiece = null;
 
                 const winner = checkWinCondition();
                 if (winner) {
-                    message.textContent = `Player ${winner} wins!`;
-                    restartButton.style.display = 'block'; // Show the restart button
+                    messageElement.textContent = `Player ${winner} wins!`;
+                    restartButton.style.display = 'block';
                 } else {
-                    currentPlayer = currentPlayer === 'A' ? 'B' : 'A'; // Switch player
-                    message.textContent = `Player ${currentPlayer}'s turn`;
+                    currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
+                    messageElement.textContent = `Player ${currentPlayer}'s turn`;
                 }
             } else {
-                message.textContent = 'Invalid move! Cell occupied by own piece or invalid destination.';
+                messageElement.textContent = 'Invalid move! Cell occupied by own piece or invalid destination.';
             }
         } else {
-            message.textContent = 'Invalid move! The piece cannot move in that way.';
+            messageElement.textContent = 'Invalid move! The piece cannot move in that way.';
         }
     } else if (cellContent && cellContent.includes(currentPlayer)) {
         selectedPiece = { row, col, piece: cellContent.split('-')[1] };
-        message.textContent = `Selected ${selectedPiece.piece} at (${row}, ${col}). Now pick a destination.`;
+        messageElement.textContent = `Selected ${selectedPiece.piece} at (${row}, ${col}). Now pick a destination.`;
     } else {
-        message.textContent = 'Invalid selection! Pick your own piece.';
+        messageElement.textContent = 'Invalid selection! Pick your own piece.';
     }
 
     renderBoard();
 }
 
 function checkWinCondition() {
-    // Check if either player has no remaining pieces
     const playerAPieces = grid.flat().filter(piece => piece.includes('A')).length;
     const playerBPieces = grid.flat().filter(piece => piece.includes('B')).length;
 
     if (playerAPieces === 0) {
-        return 'B'; // Player B wins
+        socket.send(JSON.stringify({ type: 'win', winner: 'B' }));
+        return 'B';
     } else if (playerBPieces === 0) {
-        return 'A'; // Player A wins
+        socket.send(JSON.stringify({ type: 'win', winner: 'A' }));
+        return 'A';
     }
-    return null; // No winner yet
+    return null;
 }
 
 function restartGame() {
-    // Reset the grid to the initial state
+    socket.send(JSON.stringify({ type: 'restart' }));
     grid = [
         ['A-P1', 'A-H1', 'A-H2', 'A-H3', 'A-P2'],
         ['', '', '', '', ''],
@@ -125,27 +161,15 @@ function restartGame() {
         ['', '', '', '', ''],
         ['B-P1', 'B-H1', 'B-H2', 'B-H3', 'B-P2']
     ];
-
-    // Clear move history
     moveHistory.length = 0;
     updateMoveHistory();
-
-    // Reset player and message
     currentPlayer = 'A';
-    message.textContent = "Player A's turn";
-
-    // Re-render the board
+    messageElement.textContent = "Player A's turn";
     renderBoard();
-
-    // Hide the restart button
     restartButton.style.display = 'none';
 }
 
-// Add event listener to the restart button
 restartButton.addEventListener('click', restartGame);
-
-// Initial board rendering
-renderBoard();
 
 function isMoveValid(startRow, startCol, endRow, endCol, pieceType, isPlayerA) {
     const rowDiff = Math.abs(endRow - startRow);
@@ -161,7 +185,7 @@ function isMoveValid(startRow, startCol, endRow, endCol, pieceType, isPlayerA) {
         } else if (grid[startRow][startCol].includes('H2')) {
             return rowDiff === 2 && colDiff === 2 && checkDiagonalPathForKill(startRow, startCol, endRow, endCol);
         } else if (grid[startRow][startCol].includes('H3')) {
-            return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2); // Knight-like movement
+            return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
         }
     }
     return false;
@@ -213,10 +237,30 @@ function checkDiagonalPathForKill(startRow, startCol, endRow, endCol) {
 }
 
 function updateMoveHistory() {
-    historyList.innerHTML = ''; // Clear the history list before updating
+    historyList.innerHTML = '';
     moveHistory.forEach(move => {
         const listItem = document.createElement('li');
         listItem.textContent = move;
         historyList.appendChild(listItem);
     });
 }
+
+function handleServerMove(moveInfo) {
+    grid[moveInfo.from.row][moveInfo.from.col] = '';
+    grid[moveInfo.to.row][moveInfo.to.col] = moveInfo.piece;
+    currentPlayer = currentPlayer === 'A' ? 'B' : 'A';
+    renderBoard();
+    updateMoveHistory();
+}
+
+function handleServerWin(winInfo) {
+    messageElement.textContent = `Player ${winInfo.winner} wins!`;
+    restartButton.style.display = 'block';
+}
+
+function handleServerRestart() {
+    restartGame();
+}
+
+// Initial board rendering
+renderBoard();
