@@ -19,6 +19,9 @@ socket.addEventListener('message', function(event) {
             case 'restart':
                 handleServerRestart();
                 break;
+            case 'invalid-move':
+                messageElement.textContent = message.message;  // Display invalid move message
+                break;
         }
     } catch (error) {
         // If the message is not JSON, just log it
@@ -124,19 +127,26 @@ function handleMove(row, col) {
                 }
             } else {
                 messageElement.textContent = 'Invalid move! Cell occupied by own piece or invalid destination.';
+                // Send invalid move notification to the server
+                socket.send(JSON.stringify({ type: 'invalid-move', message: 'Invalid move! Cell occupied by own piece or invalid destination.' }));
             }
         } else {
             messageElement.textContent = 'Invalid move! The piece cannot move in that way.';
+            // Send invalid move notification to the server
+            socket.send(JSON.stringify({ type: 'invalid-move', message: 'Invalid move! The piece cannot move in that way.' }));
         }
     } else if (cellContent && cellContent.includes(currentPlayer)) {
         selectedPiece = { row, col, piece: cellContent.split('-')[1] };
         messageElement.textContent = `Selected ${selectedPiece.piece} at (${row}, ${col}). Now pick a destination.`;
     } else {
         messageElement.textContent = 'Invalid selection! Pick your own piece.';
+        // Send invalid selection notification to the server
+        socket.send(JSON.stringify({ type: 'invalid-move', message: 'Invalid selection! Pick your own piece.' }));
     }
 
     renderBoard();
 }
+
 
 function checkWinCondition() {
     const playerAPieces = grid.flat().filter(piece => piece.includes('A')).length;
@@ -166,7 +176,6 @@ function restartGame() {
     currentPlayer = 'A';
     messageElement.textContent = "Player A's turn";
     renderBoard();
-    restartButton.style.display = 'none';
 }
 
 restartButton.addEventListener('click', restartGame);
@@ -255,7 +264,6 @@ function handleServerMove(moveInfo) {
 
 function handleServerWin(winInfo) {
     messageElement.textContent = `Player ${winInfo.winner} wins!`;
-    restartButton.style.display = 'block';
 }
 
 function handleServerRestart() {
