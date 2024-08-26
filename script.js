@@ -1,7 +1,7 @@
 const board = document.getElementById("game-board");
 const message = document.getElementById("message");
 const historyList = document.getElementById("history-list");
-const restartButton = document.createElement('button');
+const restartButton = document.getElementById('restart-button'); // Use existing button from HTML
 
 // Initialize the 5x5 grid with updated pieces
 let grid = [
@@ -79,9 +79,10 @@ function handleMove(row, col) {
                 grid[row][col] = `${currentPlayer}-${piece}`; // Move to new position
                 selectedPiece = null;
 
-                if (checkWinCondition()) {
-                    message.textContent = `Player ${currentPlayer} wins!`;
-                    displayRestartButton();
+                const winner = checkWinCondition();
+                if (winner) {
+                    message.textContent = `Player ${winner} wins!`;
+                    restartButton.style.display = 'block'; // Show the restart button
                 } else {
                     currentPlayer = currentPlayer === 'A' ? 'B' : 'A'; // Switch player
                     message.textContent = `Player ${currentPlayer}'s turn`;
@@ -115,13 +116,6 @@ function checkWinCondition() {
     return null; // No winner yet
 }
 
-function displayRestartButton() {
-    restartButton.textContent = 'Restart Game';
-    restartButton.classList.add('restart-button'); // Add fancy styles
-    restartButton.addEventListener('click', restartGame);
-    document.body.appendChild(restartButton); // Add the button to the page
-}
-
 function restartGame() {
     // Reset the grid to the initial state
     grid = [
@@ -142,10 +136,13 @@ function restartGame() {
 
     // Re-render the board
     renderBoard();
+
+    // Hide the restart button
+    restartButton.style.display = 'none';
 }
 
 // Add event listener to the restart button
-document.getElementById('restart-button').addEventListener('click', restartGame);
+restartButton.addEventListener('click', restartGame);
 
 // Initial board rendering
 renderBoard();
@@ -203,6 +200,7 @@ function checkDiagonalPathForKill(startRow, startCol, endRow, endCol) {
 
     let rowBetween = startRow + rowStep;
     let colBetween = startCol + colStep;
+
     while (rowBetween !== endRow && colBetween !== endCol) {
         const betweenPiece = grid[rowBetween][colBetween];
         if (betweenPiece && betweenPiece.includes(currentPlayer === 'A' ? 'A' : 'B')) return false;
@@ -215,7 +213,7 @@ function checkDiagonalPathForKill(startRow, startCol, endRow, endCol) {
 }
 
 function updateMoveHistory() {
-    historyList.innerHTML = '';
+    historyList.innerHTML = ''; // Clear the history list before updating
     moveHistory.forEach(move => {
         const listItem = document.createElement('li');
         listItem.textContent = move;

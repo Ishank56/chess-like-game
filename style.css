@@ -3,14 +3,16 @@ body {
     font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     height: 100vh;
     background-color: #e0e0e0;
+    margin: 0;
 }
 
 #game-container {
     display: flex;
-    gap: 30px;
+    flex-direction: row; /* Align grid and history side by side */
+    gap: 20px; /* Space between grid and history */
 }
 
 #game-board {
@@ -120,6 +122,13 @@ body {
 }
 
 /* Styles for Move History */
+#history-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Align to the right side */
+    justify-content: space-between;
+}
+
 #move-history {
     font-family: Arial, sans-serif;
     border: 2px solid black;
@@ -129,6 +138,7 @@ body {
     overflow-y: auto;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px; /* Adjust width as needed */
 }
 
 #move-history h2 {
@@ -149,24 +159,43 @@ body {
     cursor: pointer;
     text-align: center;
     transition: all 0.3s ease;
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 10px; /* Space above the button */
 }
 
 .restart-button:hover {
     background-color: #e64a19;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    transform: translateX(-50%) scale(1.05);
+    transform: scale(1.05);
 }
 
 .restart-button:active {
     background-color: #d84315;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    transform: translateX(-50%) scale(0.98);
+    transform: scale(0.98);
 }
 
+/* Updated Message Styles */
 #message {
-    margin-top: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px; /* Increased font size */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle shadow for better readability */
+    margin-top: 20px; /* Space below the grid */
+}
+
+/* Message Types */
+.message-info {
+    color: #333;
+}
+
+.message-warning {
+    color: #ff5722;
+}
+
+.message-success {
+    color: #4caf50;
+}
+
+.message-error {
+    color: #f44336;
 }
