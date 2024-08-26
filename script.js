@@ -24,7 +24,6 @@ socket.addEventListener('message', function(event) {
                 break;
         }
     } catch (error) {
-        // If the message is not JSON, just log it
         console.log('Received non-JSON message:', event.data);
     }
 });
@@ -127,12 +126,10 @@ function handleMove(row, col) {
                 }
             } else {
                 messageElement.textContent = 'Invalid move! Cell occupied by own piece or invalid destination.';
-                // Send invalid move notification to the server
                 socket.send(JSON.stringify({ type: 'invalid-move', message: 'Invalid move! Cell occupied by own piece or invalid destination.' }));
             }
         } else {
             messageElement.textContent = 'Invalid move! The piece cannot move in that way.';
-            // Send invalid move notification to the server
             socket.send(JSON.stringify({ type: 'invalid-move', message: 'Invalid move! The piece cannot move in that way.' }));
         }
     } else if (cellContent && cellContent.includes(currentPlayer)) {
@@ -140,13 +137,11 @@ function handleMove(row, col) {
         messageElement.textContent = `Selected ${selectedPiece.piece} at (${row}, ${col}). Now pick a destination.`;
     } else {
         messageElement.textContent = 'Invalid selection! Pick your own piece.';
-        // Send invalid selection notification to the server
         socket.send(JSON.stringify({ type: 'invalid-move', message: 'Invalid selection! Pick your own piece.' }));
     }
 
     renderBoard();
 }
-
 
 function checkWinCondition() {
     const playerAPieces = grid.flat().filter(piece => piece.includes('A')).length;
@@ -190,7 +185,7 @@ function isMoveValid(startRow, startCol, endRow, endCol, pieceType, isPlayerA) {
         return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
     } else if (pieceType === 'H') {
         if (grid[startRow][startCol].includes('H1')) {
-            return (rowDiff === 2 && colDiff === 0) || (rowDiff === 0 && colDiff === 2) && checkStraightPathForKill(startRow, startCol, endRow, endCol);
+            return (rowDiff === 2 && colDiff === 0 || rowDiff === 0 && colDiff === 2) && checkStraightPathForKill(startRow, startCol, endRow, endCol);
         } else if (grid[startRow][startCol].includes('H2')) {
             return rowDiff === 2 && colDiff === 2 && checkDiagonalPathForKill(startRow, startCol, endRow, endCol);
         } else if (grid[startRow][startCol].includes('H3')) {
